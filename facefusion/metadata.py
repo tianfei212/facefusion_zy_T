@@ -3,7 +3,7 @@ from typing import Optional
 METADATA = {
     "name": "中影人工智能研究院",
     "description": "Industry leading face manipulation platform",
-    "version": "3.3.0",
+    "version": "",
     "license": "OpenRAIL-AS",
     "author": "中影人工智能研究院",
     "url": "https://facefusion.io",

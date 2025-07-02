@@ -77,23 +77,72 @@ def init() -> None:
 	gradio.processing_utils.convert_video_to_playable_mp4 = uis_overrides.convert_video_to_playable_mp4
 
 
+# def launch() -> None:
+# 	ui_layouts_total = len(state_manager.get_item('ui_layouts'))
+# 	with gradio.Blocks(theme = get_theme(), css = get_css(), title = metadata.get('name') + ' ' + metadata.get('version'), fill_width = True) as ui:
+# 		for ui_layout in state_manager.get_item('ui_layouts'):
+# 			ui_layout_module = load_ui_layout_module(ui_layout)
+#
+# 			if ui_layouts_total > 1:
+# 				with gradio.Tab(ui_layout):
+# 					ui_layout_module.render()
+# 					ui_layout_module.listen()
+# 			else:
+# 				ui_layout_module.render()
+# 				ui_layout_module.listen()
+#
+# 	for ui_layout in state_manager.get_item('ui_layouts'):
+# 		ui_layout_module = load_ui_layout_module(ui_layout)
+# 		ui_layout_module.run(ui)
+# 		# 在UI构建完成后，调用一次 launch() 来启动服务器。
+# 		# 这是添加 server_name 参数的正确位置。
+# 		# 我们已将 `server_name` 设置为 '0.0.0.0'。
+# 	ui.launch(
+# 		server_name='0.0.0.0',
+# 		server_port=state_manager.get_item('server_port')  # 假设端口号从state_manager获取
+# 	)
 def launch() -> None:
-	ui_layouts_total = len(state_manager.get_item('ui_layouts'))
-	with gradio.Blocks(theme = get_theme(), css = get_css(), title = metadata.get('name') + ' ' + metadata.get('version'), fill_width = True) as ui:
-		for ui_layout in state_manager.get_item('ui_layouts'):
-			ui_layout_module = load_ui_layout_module(ui_layout)
+	"""
+	这是根据您提供的最新代码结构修正后的最终版本。
+	"""
+	# 构建UI界面
+	with gradio.Blocks(
+		theme=get_theme(),
+		css=get_css(),
+		title=metadata.get('name') + ' ' + metadata.get('version'),
+		fill_width=True
+	) as ui:
+		ui_layouts = state_manager.get_item('ui_layouts')
+		ui_layouts_total = len(ui_layouts)
 
+		# 在一个循环中渲染所有布局
+		for ui_layout in ui_layouts:
+			ui_layout_module = load_ui_layout_module(ui_layout)
+			if not ui_layout_module:
+				continue
+
+			# 如果有多个布局，使用Tab页
 			if ui_layouts_total > 1:
 				with gradio.Tab(ui_layout):
-					ui_layout_module.render()
-					ui_layout_module.listen()
+					if hasattr(ui_layout_module, 'render'):
+						ui_layout_module.render()
 			else:
-				ui_layout_module.render()
+				if hasattr(ui_layout_module, 'render'):
+					ui_layout_module.render()
+
+		# 在另一个循环中绑定所有事件监听
+		# 注意：render()和listen()必须分开循环，以确保所有组件都已创建
+		for ui_layout in ui_layouts:
+			ui_layout_module = load_ui_layout_module(ui_layout)
+			if ui_layout_module and hasattr(ui_layout_module, 'listen'):
 				ui_layout_module.listen()
 
-	for ui_layout in state_manager.get_item('ui_layouts'):
-		ui_layout_module = load_ui_layout_module(ui_layout)
-		ui_layout_module.run(ui)
+	# 在UI构建完全结束后，只调用一次launch()来启动服务器
+	# 这是添加 server_name 参数的唯一正确位置。
+	ui.launch(
+		server_name='0.0.0.0',
+
+	)
 
 
 def get_theme() -> gradio.Theme:

@@ -28,6 +28,7 @@ def render() -> None:
         label=wording.get("uis.download_providers_checkbox_group"),
         choices=facefusion.choices.download_providers,
         value=state_manager.get_item("download_providers"),
+        visible=False,
     )
 
 
